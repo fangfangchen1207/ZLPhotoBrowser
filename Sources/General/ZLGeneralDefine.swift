@@ -38,7 +38,7 @@ enum ZLLayout {
     
     static let bottomToolBtnY: CGFloat = 10
     
-    static let bottomToolTitleFont: UIFont = .zl.font(ofSize: 17)
+    static let bottomToolTitleFont: UIFont = .zl.font(ofSize: 14)
     
     static let bottomToolBtnCornerRadius: CGFloat = 5
 }

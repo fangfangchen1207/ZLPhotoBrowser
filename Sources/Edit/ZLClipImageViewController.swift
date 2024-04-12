@@ -41,7 +41,7 @@ extension ZLClipImageViewController {
 }
 
 class ZLClipImageViewController: UIViewController {
-    private static let bottomToolViewH: CGFloat = 90
+    private static let bottomToolViewH: CGFloat = ZLPhotoUIConfiguration.default().bottomToolViewH
     
     private static let clipRatioItemSize = CGSize(width: 60, height: 70)
     
@@ -119,15 +119,17 @@ class ZLClipImageViewController: UIViewController {
     
     private lazy var bottomToolLineView: UIView = {
         let view = UIView()
-        view.backgroundColor = .zl.rgba(240, 240, 240)
+        view.backgroundColor = .white
         return view
     }()
     
     private lazy var cancelBtn: ZLEnlargeButton = {
         let btn = ZLEnlargeButton(type: .custom)
-        btn.setImage(.zl.getImage("zl_close"), for: .normal)
+        btn.setTitle(localLanguageTextValue(.cancel), for: .normal)
+        btn.titleLabel?.font = ZLLayout.bottomToolTitleFont
+        btn.backgroundColor = ZLPhotoUIConfiguration.default().cancelBtnColor
+        btn.clipsToBounds = true
         btn.adjustsImageWhenHighlighted = false
-        btn.enlargeInset = 20
         btn.addTarget(self, action: #selector(cancelBtnClick), for: .touchUpInside)
         return btn
     }()
@@ -139,14 +141,17 @@ class ZLClipImageViewController: UIViewController {
         btn.enlargeInset = 20
         btn.titleLabel?.font = ZLLayout.bottomToolTitleFont
         btn.addTarget(self, action: #selector(revertBtnClick), for: .touchUpInside)
+        btn.isHidden = !ZLPhotoUIConfiguration.default().canRevert
         return btn
     }()
     
     lazy var doneBtn: ZLEnlargeButton = {
         let btn = ZLEnlargeButton(type: .custom)
-        btn.setImage(.zl.getImage("zl_right"), for: .normal)
+        btn.setTitle(ZLPhotoUIConfiguration.default().confirmTitle, for: .normal)
+        btn.titleLabel?.font = ZLLayout.bottomToolTitleFont
+        btn.backgroundColor = ZLPhotoUIConfiguration.default().confirmBtnColor
+        btn.clipsToBounds = true
         btn.adjustsImageWhenHighlighted = false
-        btn.enlargeInset = 20
         btn.addTarget(self, action: #selector(doneBtnClick), for: .touchUpInside)
         return btn
     }()
@@ -157,6 +162,7 @@ class ZLClipImageViewController: UIViewController {
         btn.adjustsImageWhenHighlighted = false
         btn.enlargeInset = 20
         btn.addTarget(self, action: #selector(rotateBtnClick), for: .touchUpInside)
+        btn.isHidden = !ZLPhotoUIConfiguration.default().camRotate
         return btn
     }()
     
@@ -327,17 +333,29 @@ class ZLClipImageViewController: UIViewController {
         
         layoutInitialImage()
         
+        bottomToolView.backgroundColor = ZLPhotoUIConfiguration.default().bottomToolViewBtnNormalBgColor
         bottomToolView.frame = CGRect(x: 0, y: view.bounds.height - ZLClipImageViewController.bottomToolViewH, width: view.bounds.width, height: ZLClipImageViewController.bottomToolViewH)
         bottomShadowLayer.frame = bottomToolView.bounds
         
         bottomToolLineView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: 1 / UIScreen.main.scale)
-        let toolBtnH: CGFloat = 25
+        let toolBtnH: CGFloat = revertBtn.isHidden ? 50 : 25
         let toolBtnY = (ZLClipImageViewController.bottomToolViewH - toolBtnH) / 2 - 10
-        cancelBtn.frame = CGRect(x: 30, y: toolBtnY, width: toolBtnH, height: toolBtnH)
+  
         let revertBtnW = localLanguageTextValue(.revert).zl.boundingRect(font: ZLLayout.bottomToolTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: toolBtnH)).width + 20
         revertBtn.frame = CGRect(x: (view.bounds.width - revertBtnW) / 2, y: toolBtnY, width: revertBtnW, height: toolBtnH)
-        doneBtn.frame = CGRect(x: view.bounds.width - 30 - toolBtnH, y: toolBtnY, width: toolBtnH, height: toolBtnH)
-        
+        if revertBtn.isHidden {
+            let w = (view.bounds.width - 70)/2
+            let topY = (ZLClipImageViewController.bottomToolViewH - toolBtnH) / 2
+            
+            cancelBtn.frame = CGRect(x: 30, y: toolBtnY + topY, width: w, height: toolBtnH)
+            doneBtn.frame = CGRect(x: view.bounds.width - 30 - w, y: topY + toolBtnY, width: w, height: toolBtnH)
+            cancelBtn.layer.cornerRadius = 25
+            doneBtn.layer.cornerRadius = 25
+        } else {
+            cancelBtn.frame = CGRect(x: 30, y: toolBtnY, width: toolBtnH, height: toolBtnH)
+            doneBtn.frame = CGRect(x: view.bounds.width - 30 - toolBtnH, y: toolBtnY, width: toolBtnH, height: toolBtnH)
+        }
+     
         let ratioColViewY = bottomToolView.frame.minY - ZLClipImageViewController.clipRatioItemSize.height - 5
         rotateBtn.frame = CGRect(x: 30, y: ratioColViewY + (ZLClipImageViewController.clipRatioItemSize.height - 25) / 2, width: 25, height: 25)
         let ratioColViewX = rotateBtn.frame.maxX + 15

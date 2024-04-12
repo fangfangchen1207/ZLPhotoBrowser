@@ -237,9 +237,9 @@ public class ZLPhotoUIConfiguration: NSObject {
             ZLCustomFontDeploy.ablbumCountFontName = ablbumCountFontName
         }
     }
-
+    
     public var showCameraCell: Bool = true
-
+    
     // MARK: Color properties
     
     /// The theme color of framework.
@@ -273,7 +273,7 @@ public class ZLPhotoUIConfiguration: NSObject {
     /// A color for navigation bar.
     /// 相册列表及小图界面导航条背景色
     public var navBarColor: UIColor = .zl.rgba(140, 140, 140, 0.75)
-
+    
     /// A color for navigation bar in preview interface.
     /// 预览大图界面的导航条背景色
     public var navBarColorOfPreviewVC: UIColor = .zl.rgba(50, 50, 50)
@@ -282,9 +282,9 @@ public class ZLPhotoUIConfiguration: NSObject {
     /// 相册列表及小图界面导航栏标题颜色
     public var navTitleColor: UIColor = .white
     public var navTitleH: CGFloat = 36
-
+    
     public var navCloseBtnIsLeft: Bool = false
-
+    
     /// A color for Navigation bar text of preview vc.
     /// 预览大图界面导航栏标题颜色
     public var navTitleColorOfPreviewVC: UIColor = .white
@@ -303,7 +303,7 @@ public class ZLPhotoUIConfiguration: NSObject {
     public var albumTextVertical: Bool = false
     
     public var albumImageCorner: CGFloat = 8
-
+    
     /// A color of the translucent area below the embed album list.
     /// 嵌入式相册列表下方透明区域颜色
     public var embedAlbumListTranslucentColor: UIColor = .black.withAlphaComponent(0.8)
@@ -499,6 +499,16 @@ public class ZLPhotoUIConfiguration: NSObject {
     /// Background tint color of trash can in image editor.
     /// 编辑器中垃圾箱高亮状态下的颜色
     public var trashCanBackgroundTintColor: UIColor = .zl.rgba(241, 79, 79, 0.98)
+    
+    public var confirmTitle: String = "confirm"
+    public var canRevert: Bool = false
+    public var camRotate: Bool = false
+    
+    public var cancelBtnColor: UIColor = .black
+    public var confirmBtnColor: UIColor = .zl.rgba(6, 40, 236, 1)
+    
+    public var bottomToolViewH: CGFloat = 150
+
 }
 
 /// Font deploy

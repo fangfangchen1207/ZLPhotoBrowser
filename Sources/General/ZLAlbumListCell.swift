@@ -70,11 +70,11 @@ class ZLAlbumListCell: UITableViewCell {
         return view
     }()
     
-    lazy var selectBtn: UIView = {
-        let btn = UIView()
+    lazy var selectBtn: UIButton = {
+        let btn = UIButton(type: .custom)
         btn.isUserInteractionEnabled = false
         btn.isHidden = true
-        btn.backgroundColor = ZLPhotoUIConfiguration.default().albumListBgColor
+        btn.setImage(.zl.getImage("zl_albumSelect"), for: .selected)
         return btn
     }()
     
@@ -143,7 +143,7 @@ class ZLAlbumListCell: UITableViewCell {
                 width: countW,
                 height: 30
             )
-            selectBtn.frame = self.bounds
+            selectBtn.frame = CGRect(x: 20, y: (height - 20) / 2, width: 20, height: 20)
             indicator.frame = CGRect(x: 20, y: (bounds.height - 15) / 2, width: 15, height: 15)
             return
         }
@@ -194,7 +194,10 @@ class ZLAlbumListCell: UITableViewCell {
         contentView.addSubview(countLabel)
         contentView.addSubview(indicator)
     }
-    
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        backgroundColor = selected ? ZLPhotoUIConfiguration.default().albumListBgColor : .zl.albumListBgColor
+
+    }
     func configureCell(model: ZLAlbumListModel, style: ZLPhotoBrowserStyle) {
         self.model = model
         self.style = style

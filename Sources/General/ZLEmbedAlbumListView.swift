@@ -219,7 +219,7 @@ extension ZLEmbedAlbumListView: UITableViewDataSource, UITableViewDelegate {
         
         cell.configureCell(model: m, style: .embedAlbumList)
         
-        cell.selectBtn.isSelected = m == selectedAlbum
+        cell.isSelected = m == selectedAlbum
         
         return cell
     }
