@@ -194,10 +194,12 @@ class ZLAlbumListCell: UITableViewCell {
         contentView.addSubview(countLabel)
         contentView.addSubview(indicator)
     }
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        backgroundColor = selected ? ZLPhotoUIConfiguration.default().albumListBgColor : .zl.albumListBgColor
-
+  
+    func changeSelectedStatus(_ selected: Bool) {
+        self.selectBtn.isSelected = selected
+        backgroundColor = selected ? ZLPhotoUIConfiguration.default().albumListSelectedBgColor : .zl.albumListBgColor
     }
+    
     func configureCell(model: ZLAlbumListModel, style: ZLPhotoBrowserStyle) {
         self.model = model
         self.style = style

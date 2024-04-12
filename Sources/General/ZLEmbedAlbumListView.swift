@@ -28,8 +28,8 @@ import UIKit
 import Photos
 
 class ZLEmbedAlbumListView: UIView {
-    static let rowH: CGFloat = 60
-    
+    static let rowH: CGFloat = ZLPhotoUIConfiguration.default().albumListCellHeight
+
     private var selectedAlbum: ZLAlbumListModel
     
     private lazy var tableBgView = UIView()
@@ -219,7 +219,7 @@ extension ZLEmbedAlbumListView: UITableViewDataSource, UITableViewDelegate {
         
         cell.configureCell(model: m, style: .embedAlbumList)
         
-        cell.isSelected = m == selectedAlbum
+        cell.changeSelectedStatus(m == selectedAlbum)
         
         return cell
     }

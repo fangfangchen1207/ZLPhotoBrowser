@@ -107,15 +107,16 @@ class ZLClipImageViewController: UIViewController {
     
     private lazy var bottomToolView = UIView()
     
-    private lazy var bottomShadowLayer: CAGradientLayer = {
-        let layer = CAGradientLayer()
-        layer.colors = [
-            UIColor.black.withAlphaComponent(0.15).cgColor,
-            UIColor.black.withAlphaComponent(0.35).cgColor
-        ]
-        layer.locations = [0, 1]
-        return layer
-    }()
+//    private lazy var bottomShadowLayer: CAGradientLayer = {
+//        let layer = CAGradientLayer()
+//
+//        layer.colors = [
+//            UIColor.black.withAlphaComponent(0.15).cgColor,
+//            UIColor.black.withAlphaComponent(0.35).cgColor
+//        ]
+//        layer.locations = [0, 1]
+//        return layer
+//    }()
     
     private lazy var bottomToolLineView: UIView = {
         let view = UIView()
@@ -334,11 +335,12 @@ class ZLClipImageViewController: UIViewController {
         layoutInitialImage()
         
         bottomToolView.backgroundColor = ZLPhotoUIConfiguration.default().bottomToolViewBtnNormalBgColor
+        bottomToolView.backgroundColor = .white
         bottomToolView.frame = CGRect(x: 0, y: view.bounds.height - ZLClipImageViewController.bottomToolViewH, width: view.bounds.width, height: ZLClipImageViewController.bottomToolViewH)
-        bottomShadowLayer.frame = bottomToolView.bounds
+//        bottomShadowLayer.frame = bottomToolView.bounds
         
         bottomToolLineView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: 1 / UIScreen.main.scale)
-        let toolBtnH: CGFloat = revertBtn.isHidden ? 50 : 25
+        let toolBtnH: CGFloat = revertBtn.isHidden ? 60 : 25
         let toolBtnY = (ZLClipImageViewController.bottomToolViewH - toolBtnH) / 2 - 10
   
         let revertBtnW = localLanguageTextValue(.revert).zl.boundingRect(font: ZLLayout.bottomToolTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: toolBtnH)).width + 20
@@ -347,10 +349,10 @@ class ZLClipImageViewController: UIViewController {
             let w = (view.bounds.width - 70)/2
             let topY = (ZLClipImageViewController.bottomToolViewH - toolBtnH) / 2
             
-            cancelBtn.frame = CGRect(x: 30, y: toolBtnY + topY, width: w, height: toolBtnH)
-            doneBtn.frame = CGRect(x: view.bounds.width - 30 - w, y: topY + toolBtnY, width: w, height: toolBtnH)
-            cancelBtn.layer.cornerRadius = 25
-            doneBtn.layer.cornerRadius = 25
+            cancelBtn.frame = CGRect(x: 30, y: 27, width: w, height: toolBtnH)
+            doneBtn.frame = CGRect(x: view.bounds.width - 30 - w, y: 27, width: w, height: toolBtnH)
+            cancelBtn.layer.cornerRadius = 30
+            doneBtn.layer.cornerRadius = 30
         } else {
             cancelBtn.frame = CGRect(x: 30, y: toolBtnY, width: toolBtnH, height: toolBtnH)
             doneBtn.frame = CGRect(x: view.bounds.width - 30 - toolBtnH, y: toolBtnY, width: toolBtnH, height: toolBtnH)
@@ -382,7 +384,7 @@ class ZLClipImageViewController: UIViewController {
         view.addSubview(overlayView)
         
         view.addSubview(bottomToolView)
-        bottomToolView.layer.addSublayer(bottomShadowLayer)
+//        bottomToolView.layer.addSublayer(bottomShadowLayer)
         bottomToolView.addSubview(bottomToolLineView)
         bottomToolView.addSubview(cancelBtn)
         bottomToolView.addSubview(revertBtn)
@@ -1164,7 +1166,25 @@ class ZLClipShadowView: UIView {
         ctx.setFillColor(UIColor(white: 0, alpha: 0.7).cgColor)
         ctx.fill(layer.frame)
         if !isCircle {
-            ctx.clear(shadowLayer.clearRect)
+            var rect = shadowLayer.clearRect
+            
+            let cornerRadius = ZLPhotoUIConfiguration.default().clipCornerRadius
+            if cornerRadius > 0 {
+                ctx.setLineWidth(ZLClipOverlayView.cornerLineWidth)
+
+                let cornerRadius: CGFloat = ZLPhotoUIConfiguration.default().clipCornerRadius
+                let path = UIBezierPath(roundedRect: rect, cornerRadius: cornerRadius)
+                // 添加圆角矩形路径到上下文中
+                UIColor.clear.setFill()
+                path.fill()
+                ctx.saveGState()
+                ctx.addPath(path.cgPath)
+                ctx.clip()
+                ctx.clear(rect)
+                ctx.restoreGState()
+            } else {
+                ctx.clear(rect)
+            }
         } else {
             ctx.setBlendMode(.clear)
             ctx.setFillColor(UIColor.clear.cgColor)
@@ -1310,63 +1330,74 @@ class ZLClipOverlayView: UIView {
     override func draw(_ rect: CGRect) {
         let context = UIGraphicsGetCurrentContext()
         
-        context?.setStrokeColor(UIColor.white.cgColor)
-        context?.setLineWidth(1)
+        context?.setStrokeColor(ZLPhotoUIConfiguration.default().clipBorderColor.cgColor)
         context?.beginPath()
-        
-        let circleDiff: CGFloat = (3 - 2 * sqrt(2)) * (rect.width - 2 * ZLClipOverlayView.cornerLineWidth) / 6
-        
-        var dw: CGFloat = 3
-        for i in 0..<4 {
-            let isInnerLine = isCircle && 1...2 ~= i
-            context?.move(to: CGPoint(x: rect.origin.x + dw, y: ZLClipOverlayView.cornerLineWidth + (isInnerLine ? circleDiff : 0)))
-            context?.addLine(to: CGPoint(x: rect.origin.x + dw, y: rect.height - ZLClipOverlayView.cornerLineWidth - (isInnerLine ? circleDiff : 0)))
-            dw += (rect.size.width - 6) / 3
+
+        let cornerRadius = ZLPhotoUIConfiguration.default().clipCornerRadius
+        //线
+        if cornerRadius == 0 {
+            let circleDiff: CGFloat = (3 - 2 * sqrt(2)) * (rect.width - 2 * ZLClipOverlayView.cornerLineWidth) / 6
+            var dw: CGFloat = 3
+            let boldLineLength: CGFloat = 20
+            var dh: CGFloat = 3
+       
+            context?.setLineWidth(0.5)
+            for i in 0..<4 {
+                let isInnerLine = isCircle && 1...2 ~= i
+                context?.setStrokeColor(UIColor.white.cgColor)
+
+                context?.move(to: CGPoint(x: rect.origin.x + dw, y: ZLClipOverlayView.cornerLineWidth + (isInnerLine ? circleDiff : 0)))
+                context?.addLine(to: CGPoint(x: rect.origin.x + dw, y: rect.height - ZLClipOverlayView.cornerLineWidth - (isInnerLine ? circleDiff : 0)))
+                dw += (rect.size.width - 6) / 3
+            }
+            
+            //竖线
+            for i in 0..<4 {
+                let isInnerLine = isCircle && 1...2 ~= i
+                context?.move(to: CGPoint(x: ZLClipOverlayView.cornerLineWidth + (isInnerLine ? circleDiff : 0), y: rect.origin.y + dh))
+                context?.addLine(to: CGPoint(x: rect.width - ZLClipOverlayView.cornerLineWidth - (isInnerLine ? circleDiff : 0), y: rect.origin.y + dh))
+                dh += (rect.size.height - 6) / 3
+            }
+
+            context?.strokePath()
+            
+            context?.setLineWidth(ZLClipOverlayView.cornerLineWidth)
+
+            // 左上
+            context?.move(to: CGPoint(x: 0, y: 1.5))
+            
+            context?.addLine(to: CGPoint(x: boldLineLength, y: 1.5))
+            context?.move(to: CGPoint(x: 1.5, y: 0))
+            context?.addLine(to: CGPoint(x: 1.5, y: boldLineLength))
+            
+            // 右上
+            context?.move(to: CGPoint(x: rect.width - boldLineLength, y: 1.5))
+            context?.addLine(to: CGPoint(x: rect.width, y: 1.5))
+            context?.move(to: CGPoint(x: rect.width - 1.5, y: 0))
+            context?.addLine(to: CGPoint(x: rect.width - 1.5, y: boldLineLength))
+            
+            // 左下
+            context?.move(to: CGPoint(x: 1.5, y: rect.height - boldLineLength))
+            context?.addLine(to: CGPoint(x: 1.5, y: rect.height))
+            context?.move(to: CGPoint(x: 0, y: rect.height - 1.5))
+            context?.addLine(to: CGPoint(x: boldLineLength, y: rect.height - 1.5))
+
+            
+            // 右下
+            context?.move(to: CGPoint(x: rect.width - boldLineLength, y: rect.height - 1.5))
+            context?.addLine(to: CGPoint(x: rect.width, y: rect.height - 1.5))
+            context?.move(to: CGPoint(x: rect.width - 1.5, y: rect.height - boldLineLength))
+            context?.addLine(to: CGPoint(x: rect.width - 1.5, y: rect.height))
+        } else {
+            context?.setLineWidth(ZLClipOverlayView.cornerLineWidth)
+            
+            // 创建一个矩形路径
+            let rectPath = UIBezierPath(roundedRect: rect, byRoundingCorners: .allCorners, cornerRadii: CGSize(width: 40, height: 40))
+            // 将路径添加到上下文中
+            context?.addPath(rectPath.cgPath)
         }
-
-        var dh: CGFloat = 3
-        for i in 0..<4 {
-            let isInnerLine = isCircle && 1...2 ~= i
-            context?.move(to: CGPoint(x: ZLClipOverlayView.cornerLineWidth + (isInnerLine ? circleDiff : 0), y: rect.origin.y + dh))
-            context?.addLine(to: CGPoint(x: rect.width - ZLClipOverlayView.cornerLineWidth - (isInnerLine ? circleDiff : 0), y: rect.origin.y + dh))
-            dh += (rect.size.height - 6) / 3
-        }
-
+            
         context?.strokePath()
-
-        context?.setLineWidth(ZLClipOverlayView.cornerLineWidth)
-
-        let boldLineLength: CGFloat = 20
-        // 左上
-        context?.move(to: CGPoint(x: 0, y: 1.5))
-        context?.addLine(to: CGPoint(x: boldLineLength, y: 1.5))
-
-        context?.move(to: CGPoint(x: 1.5, y: 0))
-        context?.addLine(to: CGPoint(x: 1.5, y: boldLineLength))
-
-        // 右上
-        context?.move(to: CGPoint(x: rect.width - boldLineLength, y: 1.5))
-        context?.addLine(to: CGPoint(x: rect.width, y: 1.5))
-
-        context?.move(to: CGPoint(x: rect.width - 1.5, y: 0))
-        context?.addLine(to: CGPoint(x: rect.width - 1.5, y: boldLineLength))
-
-        // 左下
-        context?.move(to: CGPoint(x: 1.5, y: rect.height - boldLineLength))
-        context?.addLine(to: CGPoint(x: 1.5, y: rect.height))
-
-        context?.move(to: CGPoint(x: 0, y: rect.height - 1.5))
-        context?.addLine(to: CGPoint(x: boldLineLength, y: rect.height - 1.5))
-
-        // 右下
-        context?.move(to: CGPoint(x: rect.width - boldLineLength, y: rect.height - 1.5))
-        context?.addLine(to: CGPoint(x: rect.width, y: rect.height - 1.5))
-
-        context?.move(to: CGPoint(x: rect.width - 1.5, y: rect.height - boldLineLength))
-        context?.addLine(to: CGPoint(x: rect.width - 1.5, y: rect.height))
-
-        context?.strokePath()
-
         context?.setShadow(offset: CGSize(width: 1, height: 1), blur: 0)
     }
 }

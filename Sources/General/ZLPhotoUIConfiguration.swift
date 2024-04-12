@@ -296,11 +296,11 @@ public class ZLPhotoUIConfiguration: NSObject {
     /// A color for background in album list.
     /// 相册列表背景色
     public var albumListBgColor: UIColor = .zl.rgba(45, 45, 45)
-    public var albumListSelectedBgColor: UIColor = .zl.rgba(45, 45, 45)
+    public var albumListSelectedBgColor: UIColor = .zl.rgba(246, 248, 255)
     
     public var albumListCellHeight: CGFloat = 90
     public var albumImageHeight: CGFloat = 72
-    public var albumTextVertical: Bool = false
+    public var albumTextVertical: Bool = true
     
     public var albumImageCorner: CGFloat = 8
     
@@ -508,6 +508,12 @@ public class ZLPhotoUIConfiguration: NSObject {
     public var confirmBtnColor: UIColor = .zl.rgba(6, 40, 236, 1)
     
     public var bottomToolViewH: CGFloat = 150
+
+    //裁剪线的颜色
+    public var clipBorderColor: UIColor = .zl.rgba(6, 40, 236, 1)
+    public var clipCornerRadius: CGFloat = 40
+    public var clipHScap: CGFloat = 40
+
 
 }
 
