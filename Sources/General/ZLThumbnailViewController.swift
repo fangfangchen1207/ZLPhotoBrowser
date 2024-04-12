@@ -1531,7 +1531,7 @@ extension ZLThumbnailViewController: PHPhotoLibraryChangeObserver {
 // MARK: embed album list nav view
 
 class ZLEmbedAlbumListNavView: UIView {
-    private static let titleViewH: CGFloat = 32
+    private static let titleViewH: CGFloat = ZLPhotoUIConfiguration.default().navTitleH
     
     private static let arrowH: CGFloat = 20
     
@@ -1606,12 +1606,22 @@ class ZLEmbedAlbumListNavView: UIView {
         }
         
         refreshTitleViewFrame()
-        if ZLPhotoUIConfiguration.default().navCancelButtonStyle == .text {
-            let cancelBtnW = localLanguageTextValue(.cancel).zl.boundingRect(font: ZLLayout.navTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: 44)).width
-            cancelBtn.frame = CGRect(x: insets.left + 20, y: insets.top, width: cancelBtnW, height: 44)
+        if ZLPhotoUIConfiguration.default().navCloseBtnIsLeft {
+            if ZLPhotoUIConfiguration.default().navCancelButtonStyle == .text {
+                let cancelBtnW = localLanguageTextValue(.cancel).zl.boundingRect(font: ZLLayout.navTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: 44)).width
+                cancelBtn.frame = CGRect(x: insets.left + 20, y: insets.top, width: cancelBtnW, height: 44)
+            } else {
+                cancelBtn.frame = CGRect(x: insets.left + 10, y: insets.top, width: 44, height: 44)
+            }
         } else {
-            cancelBtn.frame = CGRect(x: insets.left + 10, y: insets.top, width: 44, height: 44)
+            if ZLPhotoUIConfiguration.default().navCancelButtonStyle == .text {
+                let cancelBtnW = localLanguageTextValue(.cancel).zl.boundingRect(font: ZLLayout.navTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: 44)).width
+                cancelBtn.frame = CGRect(x: self.frame.width - 20 - cancelBtnW, y: insets.top, width: cancelBtnW, height: 44)
+            } else {
+                cancelBtn.frame = CGRect(x: self.frame.width - 20 - 44, y: insets.top, width: 40, height: 40)
+            }
         }
+       
     }
     
     private func refreshTitleViewFrame() {

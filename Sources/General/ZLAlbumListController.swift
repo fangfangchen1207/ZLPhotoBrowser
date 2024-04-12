@@ -36,7 +36,7 @@ class ZLAlbumListController: UIViewController {
         let view = UITableView(frame: .zero, style: .plain)
         view.backgroundColor = .zl.albumListBgColor
         view.tableFooterView = UIView()
-        view.rowHeight = 65
+        view.rowHeight = ZLPhotoUIConfiguration.default().albumListCellHeight
         view.separatorInset = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 0)
         view.separatorColor = .zl.separatorLineColor
         view.delegate = self

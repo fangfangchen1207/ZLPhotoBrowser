@@ -34,4 +34,7 @@ extension ZLPhotoBrowserWrapper where Base: UIFont {
         
         return UIFont(name: name, size: size) ?? UIFont.systemFont(ofSize: size, weight: bold ? .medium : .regular)
     }
+    static func font(ofSize size: CGFloat, fontName:String) -> UIFont {
+        return UIFont(name: fontName, size: size) ?? UIFont.systemFont(ofSize: size, weight: .medium)
+    }
 }

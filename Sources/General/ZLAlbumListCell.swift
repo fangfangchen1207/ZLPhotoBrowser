@@ -31,6 +31,7 @@ class ZLAlbumListCell: UITableViewCell {
         let view = UIImageView()
         view.contentMode = .scaleAspectFill
         view.clipsToBounds = true
+        view.layer.cornerRadius = ZLPhotoUIConfiguration.default().albumImageCorner
         if ZLPhotoUIConfiguration.default().cellCornerRadio > 0 {
             view.layer.masksToBounds = true
             view.layer.cornerRadius = ZLPhotoUIConfiguration.default().cellCornerRadio
@@ -40,14 +41,14 @@ class ZLAlbumListCell: UITableViewCell {
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .zl.font(ofSize: 17)
+        label.font = .zl.font(ofSize: 16, fontName: ZLCustomFontDeploy.ablbumNameFontName ?? "")
         label.textColor = .zl.albumListTitleColor
         return label
     }()
     
     private lazy var countLabel: UILabel = {
         let label = UILabel()
-        label.font = .zl.font(ofSize: 16)
+        label.font = .zl.font(ofSize: 12, fontName: ZLCustomFontDeploy.ablbumCountFontName ?? "")
         label.textColor = .zl.albumListCountColor
         return label
     }()
@@ -69,11 +70,11 @@ class ZLAlbumListCell: UITableViewCell {
         return view
     }()
     
-    lazy var selectBtn: UIButton = {
-        let btn = UIButton(type: .custom)
+    lazy var selectBtn: UIView = {
+        let btn = UIView()
         btn.isUserInteractionEnabled = false
         btn.isHidden = true
-        btn.setImage(.zl.getImage("zl_albumSelect"), for: .selected)
+        btn.backgroundColor = ZLPhotoUIConfiguration.default().albumListBgColor
         return btn
     }()
     
@@ -98,7 +99,7 @@ class ZLAlbumListCell: UITableViewCell {
         let width = contentView.zl.width
         let height = contentView.zl.height
         
-        let coverImageW = height - 4
+        let coverImageW = ZLPhotoUIConfiguration.default().albumImageHeight
         let maxTitleW = width - coverImageW - 80
         
         var titleW: CGFloat = 0
@@ -142,26 +143,42 @@ class ZLAlbumListCell: UITableViewCell {
                 width: countW,
                 height: 30
             )
-            selectBtn.frame = CGRect(x: 20, y: (height - 20) / 2, width: 20, height: 20)
+            selectBtn.frame = self.bounds
             indicator.frame = CGRect(x: 20, y: (bounds.height - 15) / 2, width: 15, height: 15)
             return
         }
         
         let imageViewX: CGFloat
         if style == .embedAlbumList {
-            imageViewX = 0
+            imageViewX = 10
         } else {
             imageViewX = 12
         }
         
-        coverImageView.frame = CGRect(x: imageViewX, y: 2, width: coverImageW, height: coverImageW)
-        titleLabel.frame = CGRect(
-            x: coverImageView.zl.right + 10,
-            y: (bounds.height - 30) / 2,
-            width: titleW,
-            height: 30
-        )
-        countLabel.frame = CGRect(x: titleLabel.zl.right + 10, y: (height - 30) / 2, width: countW, height: 30)
+        coverImageView.frame = CGRect(x: imageViewX, y: (height - coverImageW) / 2, width: coverImageW, height: coverImageW)
+        if ZLPhotoUIConfiguration.default().albumTextVertical {
+            let titleH: CGFloat = 24
+            let scap: CGFloat = 4
+            let countH: CGFloat = 18
+            
+            titleLabel.frame = CGRect(
+                x: coverImageView.zl.right + 10,
+                y: (bounds.height - titleH - scap - countH) / 2,
+                width: titleW,
+                height: titleH
+            )
+            countLabel.frame = CGRect(x: titleLabel.zl.left, y: titleLabel.zl.bottom + scap, width: countW, height: countH)
+       
+        } else {
+            titleLabel.frame = CGRect(
+                x: coverImageView.zl.right + 10,
+                y: (bounds.height - 30) / 2,
+                width: titleW,
+                height: 30
+            )
+            countLabel.frame = CGRect(x: titleLabel.zl.right + 10, y: (height - 30) / 2, width: countW, height: 30)
+       
+        }
         selectBtn.frame = CGRect(x: width - 20 - 20, y: (height - 20) / 2, width: 20, height: 20)
         indicator.frame = CGRect(x: width - 20 - 15, y: (height - 15) / 2, width: 15, height: 15)
     }
@@ -170,11 +187,11 @@ class ZLAlbumListCell: UITableViewCell {
         backgroundColor = .zl.albumListBgColor
         selectionStyle = .none
         accessoryType = .none
-        
+        contentView.addSubview(selectBtn)
+
         contentView.addSubview(coverImageView)
         contentView.addSubview(titleLabel)
         contentView.addSubview(countLabel)
-        contentView.addSubview(selectBtn)
         contentView.addSubview(indicator)
     }
     

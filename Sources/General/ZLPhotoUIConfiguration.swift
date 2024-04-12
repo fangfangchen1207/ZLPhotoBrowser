@@ -227,6 +227,19 @@ public class ZLPhotoUIConfiguration: NSObject {
         }
     }
     
+    public var ablbumNameFontName: String? {
+        didSet {
+            ZLCustomFontDeploy.ablbumNameFontName = ablbumNameFontName
+        }
+    }
+    public var ablbumCountFontName: String? {
+        didSet {
+            ZLCustomFontDeploy.ablbumCountFontName = ablbumCountFontName
+        }
+    }
+
+    public var showCameraCell: Bool = true
+
     // MARK: Color properties
     
     /// The theme color of framework.
@@ -260,7 +273,7 @@ public class ZLPhotoUIConfiguration: NSObject {
     /// A color for navigation bar.
     /// 相册列表及小图界面导航条背景色
     public var navBarColor: UIColor = .zl.rgba(140, 140, 140, 0.75)
-    
+
     /// A color for navigation bar in preview interface.
     /// 预览大图界面的导航条背景色
     public var navBarColorOfPreviewVC: UIColor = .zl.rgba(50, 50, 50)
@@ -268,7 +281,10 @@ public class ZLPhotoUIConfiguration: NSObject {
     /// A color for Navigation bar text.
     /// 相册列表及小图界面导航栏标题颜色
     public var navTitleColor: UIColor = .white
-    
+    public var navTitleH: CGFloat = 36
+
+    public var navCloseBtnIsLeft: Bool = false
+
     /// A color for Navigation bar text of preview vc.
     /// 预览大图界面导航栏标题颜色
     public var navTitleColorOfPreviewVC: UIColor = .white
@@ -280,7 +296,14 @@ public class ZLPhotoUIConfiguration: NSObject {
     /// A color for background in album list.
     /// 相册列表背景色
     public var albumListBgColor: UIColor = .zl.rgba(45, 45, 45)
+    public var albumListSelectedBgColor: UIColor = .zl.rgba(45, 45, 45)
     
+    public var albumListCellHeight: CGFloat = 90
+    public var albumImageHeight: CGFloat = 72
+    public var albumTextVertical: Bool = false
+    
+    public var albumImageCorner: CGFloat = 8
+
     /// A color of the translucent area below the embed album list.
     /// 嵌入式相册列表下方透明区域颜色
     public var embedAlbumListTranslucentColor: UIColor = .black.withAlphaComponent(0.8)
@@ -481,6 +504,10 @@ public class ZLPhotoUIConfiguration: NSObject {
 /// Font deploy
 enum ZLCustomFontDeploy {
     static var fontName: String?
+    static var titleFontName: String?
+    static var ablbumNameFontName: String?
+    static var ablbumCountFontName: String?
+
 }
 
 /// Image source deploy
